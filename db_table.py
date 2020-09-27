@@ -131,7 +131,8 @@ class db_table:
     # update multiple rows matching the specified condition
     #
     # \param values  dict<string, string>  values to be updates, mapping column to value
-    # \param where   dict<string, string>  where filters to be applied. only combine them using AND and only check for strict equality
+    # \param where   dict<string, string>  where filters to be applied. only combine them using AND and only check
+    #  for strict equality
     #
     # \return number of updated records
     #
@@ -162,6 +163,42 @@ class db_table:
         cursor = self.db_conn.cursor()
         query = "DROP TABLE " + self.name
         cursor.execute(query)
+
+    #
+    # The LIKE operator is used in a WHERE clause to search for a specified pattern in a column.
+    # Query the database by applying the specified filters
+    #
+    # \param columns  array<string>        columns to be fetched. if empty, will query all the columns
+    # \param cols     string               attribute name
+    # \param val      string               attribute value
+    #
+    # \return [ { col1: val1, col2: val2, col3: val3 } ]
+    #
+    # Example table.like("speaker","John")
+    #
+    def like(self, columns=[], col="", val=""):
+        if not columns:
+            columns = [k for k in self.schema]
+
+        columns_query_string = ", ".join(columns)
+        query = "SELECT %s FROM %s" % (columns_query_string, self.name)
+
+        # build where query string
+        query += " WHERE " + col + " LIKE " + "'%" + val + "%'"
+        result = []
+        # SELECT id, name FROM users [ WHERE id=42 AND name LIKE %John% ]
+        #
+        # Note that columns are formatted into the string without using sqlite safe substitution mechanism
+        # The reason is that sqlite does not provide substitution mechanism for columns parameters
+        # In the context of this project, this is fine (no risk of user malicious input)
+        for row in self.db_conn.execute(query):
+            result_row = {}
+            # convert from (val1, val2, val3) to { col1: val1, col2: val2, col3: val3 }
+            for i in range(0, len(columns)):
+                result_row[columns[i]] = row[i]
+            result.append(result_row)
+
+        return result
 
     #
     # Close the database connection
