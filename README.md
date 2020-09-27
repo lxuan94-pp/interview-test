@@ -28,45 +28,10 @@ $> python lookup_agenda column value
 
 Column,Value:
 * column can be one of {date, time_start, time_end, title, location, description, speaker}
-* value is the expected value for that field
+* value is the expected value for that field  
 
-For example, if I got the following simplified rows:
-Title	     Location 	  Description		    Type
-===========================================================================  
-Breakfast    Lounge	  Fresh fruits and pastries Session
-Hangout	     Beach	  Have fun		    Subsession of Breakfast
-Lunch	     Price Center Junk food    	   	    Session
-Dinner	     Mamma Linnas Italien handmade pasta    Session
-Networking   Lounge	  Let's meet		    Subsession of Dinner
-
-Then the expected behavior is as follow:
-$> python lookup_agenda.py location lounge
-Breakfast   Lounge    	  Fresh fruits and pastries Session	  # Returned because its location is lounge 
-Hangout	    Beach	  Have fun		    Subsession    # Returned because its parent session location is lounge
-Networking  Lounge	  Let's meet   	   	Subsession	  # Returned because its location is lounge
-
-Please note:
-* The value of description in excel file contains ""(quotation mark), which will cause the compiler to read the 
-description as more than one argument, for example:
-The description "<p><span style="color: rgb(34, 34, 34)"; font" will take "<p><span style=" as the first argument 
-instead of the complete sentence.
-To solve this:
-you should input
-$> python lookup_agenda.py description "<p><span style=\"color: rgb(34, 34, 34)\"; font"
-* If the value contains space ‘ ’， for example 'Breakfast ', this is different from 'Breakfast', 
-for the provided feature searched on exact match, simply replace the space will cause 'Room 201' to become 'Room201', 
-so I didn't make such changes. 
-* If the value contains more than one word, for example 'Room 201' and 'Coral Lounge', when searching for these values, 
-you should use "value" instead of value
-* I have already filter the result which will contain the repeated records for following situations:
-$> python lookup_agenda.py speaker John
-Title	     Location 	  		    Type                 Speaker
-===========================================================================
-Breakfast    Lounge	                Session              John;Alex  # Returned because its speaker contains John
-Hangout	     Beach	  	            Sub                  John       # Returned because its speaker is John
-Lunch	     Price Center    	   	Session              John       # Returned because its speaker is John
   
-
+  
 ### db_table.py
 Modification of the file: provide two more features:
 * drop
@@ -75,14 +40,15 @@ Modification of the file: provide two more features:
 Operation drop used to prevent repeated information when running the import_agenda more than one time
 Operation like used for fuzzy search, in this test, used for searching speaker particularly
 
-This can be used as follow:
-from db_table import db_table
-users = db_table("users", { "id": "integer PRIMARY KEY", "speaker": "text", "email": "text NOT NULL UNIQUE" })
-users.like("speaker","John")
-users.drop()
-users.close()
+This can be used as follow:  
+from db_table import db_table  
+users = db_table("users", { "id": "integer PRIMARY KEY", "speaker": "text", "email": "text NOT NULL UNIQUE" })  
+users.like("speaker","John")  
+users.drop()  
+users.close()  
 
-## What I have done?
+
+### What I have done?
 * Use library xlrd, copy
 * Create two database tables, one for sessions, one for subsessions, 
 each subsession has a foreign key session_id to indicate which session it belongs to
@@ -90,6 +56,27 @@ each subsession has a foreign key session_id to indicate which session it belong
 * Filter the input, replace some ' to space as it will cause compile error
 * Output all the records as dictionary format and return the number of records which have been found
 
-## Resources
+
+### Please note:
+* The value of description in excel file contains ""(quotation mark), which will cause the compiler to read the 
+description as more than one argument, for example:  
+The description  "style="color: rgb(34, 34, 34)"; font"  will take "style=" as the first argument instead of the complete sentence.  To solve this you should put a \'\\\' before each " :    
+
+   $> python lookup_agenda.py description "style=\\"color: rgb(34, 34, 34)\\"; font"   
+
+* If the value contains space ‘ ’， for example 'Breakfast ', this is different from 'Breakfast',   
+for the provided feature searched on exact match, simply replace the space will cause 'Room 201' to become 'Room201', 
+so I didn't make such changes. 
+* If the value contains more than one word, for example 'Room 201' and 'Coral Lounge', when searching for these values, 
+you should use "value" instead of value
+* I have already filter the result which will not contain the repeated records for following situations:  
+$> python lookup_agenda.py speaker John    
+Title	       Location 	  		    Type                 Speaker   
+===========================================================================  
+Breakfast    Lounge	            Session              John;Alex  # Returned because its speaker contains John  
+Hangout	     Beach	  	        Sub                  John       # Returned because its speaker is John  
+Lunch	     Price Center    	Session              John       # Returned because its speaker is John  
+
+### Resources
 * [Python SQLite3 documentation](https://docs.python.org/2/library/sqlite3.html)
 * [Python Excel parsing](https://github.com/python-excel/xlrd)
