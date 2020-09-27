@@ -3,9 +3,9 @@
 
 ### import_agenda.py
 The function of this file:
-1. Open the Agenda excel file
-2. Design two SQLite Database table schemas. sessionTable and subTable, which store agenda information based on type
-3. Parse the content of the excel file and store the content in the table
+* Open the Agenda excel file
+* Design two SQLite Database table schemas. sessionTable and subTable, which store agenda information based on type
+* Parse the content of the excel file and store the content in the table
 
 Command:
 $> python import_agenda.py agenda.xls
@@ -17,11 +17,11 @@ Once import the agenda successfully, the program print out "Import the agenda su
 
 ### lookup_agenda.py
 The function of this file:
-1. Parse the command line arguments to retrieve the conditions.
-2. Lookup the data you imported for the matching records
-3. If you are searching for "speaker", it will return all sessions and sub where we can find this speaker
+* Parse the command line arguments to retrieve the conditions.
+* Lookup the data you imported for the matching records
+* If you are searching for "speaker", it will return all sessions and sub where we can find this speaker
    If you are searching for onr of "date, time_start, time_end, title, location and description", return exact match
-4. Print the result onto the screen
+* Print the result onto the screen
 
 Command:
 $> python lookup_agenda column value
