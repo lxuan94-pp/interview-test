@@ -154,6 +154,16 @@ class db_table:
         return cursor.rowcount
 
     #
+    # Drop wrapper
+    #
+    # Example table.drop()
+    #
+    def drop(self):
+        cursor = self.db_conn.cursor()
+        query = "DROP TABLE " + self.name
+        cursor.execute(query)
+
+    #
     # Close the database connection
     #
     def close(self):
