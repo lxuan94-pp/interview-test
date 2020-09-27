@@ -72,7 +72,7 @@ you should use "value" instead of value
 * I have already filter the result which will not contain the repeated records for following situations:  
 $> python lookup_agenda.py speaker John    
 Title	       Location 	  		    Type                 Speaker   
-===========================================================================  
+====================================================================  
 Breakfast    Lounge	            Session              John;Alex  # Returned because its speaker contains John  
 Hangout	     Beach	  	        Sub                  John       # Returned because its speaker is John  
 Lunch	     Price Center    	Session              John       # Returned because its speaker is John  
